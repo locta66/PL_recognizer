@@ -18,6 +18,8 @@ public class Tokenizer {
     toTokens = toTokens.replaceAll("/\\*(.*?)\\*/","");
     toTokens = toTokens.replaceAll("\"\"\"(.*?)\"\"\"","");
     toTokens = toTokens.replaceAll("\'\'\'(.*?)\'\'\'","");
+    toTokens = toTokens.replaceAll("//(.*?)\\n","");
+
     }
     public void ToTokens(){
         int begin_index=-1;
@@ -34,6 +36,7 @@ public class Tokenizer {
             else{
                 if(i==0)
                     continue;
+
                 if(ch!=' '&&ch!='\t'&&ch!='\n'){
                     tokenss.add(toTokens.substring(i,i+1));
                 }
@@ -84,7 +87,8 @@ public class Tokenizer {
                 "fdsafdsf" +
                 "*/" +
                 " fd" +
-                "fdsfa   sk");
+                "fdsfa //weilao\n  sk " +
+                "");
         tokenizer.preProcess();
         tokenizer.ToTokens();
         String []r = tokenizer.getTokens();

@@ -8,6 +8,7 @@ import java.io.*;
 import java.rmi.server.ExportException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.Set;
 
 public class BayesHandle {
@@ -34,10 +35,10 @@ public class BayesHandle {
                 continue;
             }
             */
-            /*
+
            if(!language_name.equals("C")&&!language_name.equals("C++")&&!language_name.equals("C#")&&!language_name.equals("Java")&&!language_name.equals("Python")){
                 continue;
-            }*/
+            }
 
             if(!tempList[i].isDirectory()){
               continue;
@@ -124,6 +125,10 @@ public class BayesHandle {
     }
     public static void main(String[] args){
       BayesHandle bayesHandle =  new BayesHandle();
+      Set<String>ss =bayesHandle.bayes.getCategories();
+      float posibility =  bayesHandle.bayes.featureProbability("iostream","C++");
+         posibility =  bayesHandle.bayes.featureWeighedAverage("iostream","C++");
+       System.out.println("posibility:"+posibility);
         String unknown1  = "include cout endl ";
         String unknown2  = "import java import java Iamdonfjals";
         String unknown3  ="\n" +
