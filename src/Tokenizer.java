@@ -14,8 +14,10 @@ public class Tokenizer {
     }
     public void preProcess(){
 
-
-
+    toTokens = toTokens.replaceAll("\"(.*?)\"","");
+    toTokens = toTokens.replaceAll("/\\*(.*?)\\*/","");
+    toTokens = toTokens.replaceAll("\"\"\"(.*?)\"\"\"","");
+    toTokens = toTokens.replaceAll("\'\'\'(.*?)\'\'\'","");
     }
     public void ToTokens(){
         int begin_index=-1;
@@ -39,7 +41,9 @@ public class Tokenizer {
                   try {
                       String s = toTokens.substring(begin_index, i);
                    //   System.out.println(s);
-                      tokenss.add(s);
+                      if(s.length()<=7) {
+                          tokenss.add(s);
+                      }
                       begin_index = -1;
                   }
                   catch (Exception e ){
@@ -71,32 +75,16 @@ public class Tokenizer {
 
     public static  void main (String []args){
         Tokenizer tokenizer = new Tokenizer();
-        tokenizer.setToTokens("using System.Collections.Generic;\n" +
-                "using System.Collections.ObjectModel;\n" +
-                "using System.Linq;\n" +
-                "using System.Linq.Expressions;\nusing System;\n" +
-                "using System.Collections.Generic;\n" +
-                "using System.Linq;\n" +
-                "using System.Text;\n" +
-                "using System.Threading.Tasks;" +
-                "namespace MongoDB.Serialization.Descriptors\n" +
-                "{\n" +
-                "    internal class BsonPropertyValue\n" +
-                "    {\n" +
-                "        public bool IsDictionary { get; private set; }\n" +
-                "\n" +
-                "        public Type Type { get; private set; }\n" +
-                "\n" +
-                "        public object Value { get; private set; }\n" +
-                "\n" +
-                "        public BsonPropertyValue(Type type, object value, bool isDictionary)\n" +
-                "        {\n" +
-                "            Type = type;\n" +
-                "            Value = value;\n" +
-                "            IsDictionary = isDictionary;\n" +
-                "        }\n" +
-                "    }\n" +
-                "}");
+        tokenizer.setToTokens("\"fsfsadfdsfd\"+abcdefg1" +
+                "//a bagaa" +
+                "/*" +
+                "\"\"\"" +
+                        "python" +
+                        "\"\"\""+
+                "fdsafdsf" +
+                "*/" +
+                " fd" +
+                "fdsfa   sk");
         tokenizer.preProcess();
         tokenizer.ToTokens();
         String []r = tokenizer.getTokens();
