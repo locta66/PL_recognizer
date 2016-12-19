@@ -1,5 +1,5 @@
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 
 /**
@@ -7,19 +7,50 @@ import java.util.Iterator;
  */
 public class Tokenizer {
     String toTokens;
-//    String []tokens;
+    //    String []tokens;
     ArrayList<String> tokenss;
+    HashSet<Character> ignored;
+    HashSet<Character> included;
+
     public Tokenizer(){
+
         tokenss = new ArrayList<String>();
+        ignored = new HashSet<Character>();
+        included = new HashSet<Character>();
+        ignored.add(' ');
+        ignored.add('\n');
+        ignored.add('\t');
+        ignored.add('+');
+        ignored.add('-');
+        ignored.add('*');
+        ignored.add('/');
+        ignored.add('(');
+        ignored.add(')');
+        ignored.add('{');
+        ignored.add('}');
+        ignored.add('<');
+        ignored.add('>');
+        ignored.add('!');
+        ignored.add('=');
+        included.add('@');
+        included.add('#');
+        included.add('?');
+        included.add('_');
+        included.add('<');
+        included.add('>');
+        included.add('*');
+        included.add('[');
+        included.add(']');
+
+
     }
     public void preProcess(){
 
-    toTokens = toTokens.replaceAll("\"(.*?)\"","");
-    toTokens = toTokens.replaceAll("/\\*(.*?)\\*/","");
-    toTokens = toTokens.replaceAll("\"\"\"(.*?)\"\"\"","");
-    toTokens = toTokens.replaceAll("\'\'\'(.*?)\'\'\'","");
-    toTokens = toTokens.replaceAll("//(.*?)\\n","");
-
+        toTokens = toTokens.replaceAll("\"(.*?)\"","");
+        toTokens = toTokens.replaceAll("/\\*(.*?)\\*/","");
+        toTokens = toTokens.replaceAll("\"\"\"(.*?)\"\"\"","");
+        toTokens = toTokens.replaceAll("\'\'\'(.*?)\'\'\'","");
+        toTokens = toTokens.replaceAll("//(.*?)\\n","");
     }
     public void ToTokens(){
         int begin_index=-1;
@@ -27,7 +58,7 @@ public class Tokenizer {
         for(int i =0 ;i <toTokens.length();i++){
 
             char ch = toTokens.charAt(i);
-            if(('A'<=ch&&ch<='Z')||('a'<=ch&&ch<='z')){
+            if(Character.isLetter(ch) || included.contains(ch)){
                 if(begin_index==-1){
                     begin_index = i;
                 }
@@ -36,24 +67,24 @@ public class Tokenizer {
             else{
                 if(i==0)
                     continue;
-
-                if(ch!=' '&&ch!='\t'&&ch!='\n'){
+                if(!ignored.contains(ch)&&!(Character.isDigit(ch))){
                     tokenss.add(toTokens.substring(i,i+1));
                 }
                 if(('A'<=toTokens.charAt(i-1)&&toTokens.charAt(i-1)<='Z')||('a'<=toTokens.charAt(i-1)&&toTokens.charAt(i-1)<='z')){
-                  try {
-                      String s = toTokens.substring(begin_index, i);
-                   //   System.out.println(s);
-                      if(s.length()<=7) {
-                          tokenss.add(s);
-                      }
-                      begin_index = -1;
-                  }
-                  catch (Exception e ){
-                      System.out.println(e.getMessage());
-                  }
+                    try {
+                        String s = toTokens.substring(begin_index, i);
+                        //   System.out.println(s);
 
-                  }
+                        if(s.length()<=20 && s.length()>2) {
+                            tokenss.add(s);
+                        }
+                        begin_index = -1;
+                    }
+                    catch (Exception e ){
+                        System.out.println(e.getMessage());
+                    }
+
+                }
             }
 
         }
@@ -64,6 +95,8 @@ public class Tokenizer {
         this.toTokens = toTokens;
     }
     public  String[] getTokens (){
+        preProcess();
+        ToTokens();
         int maxlen = tokenss.size();
         String[] sa = new String[maxlen];
         Iterator<String> it = tokenss.iterator();
@@ -82,13 +115,12 @@ public class Tokenizer {
                 "//a bagaa" +
                 "/*" +
                 "\"\"\"" +
-                        "python" +
-                        "\"\"\""+
+                "python" +
+                "\"\"\""+
                 "fdsafdsf" +
                 "*/" +
                 " fd" +
-                "fdsfa //weilao\n  sk " +
-                "");
+                "fdsfa   sk");
         tokenizer.preProcess();
         tokenizer.ToTokens();
         String []r = tokenizer.getTokens();
