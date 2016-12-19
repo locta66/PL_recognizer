@@ -111,12 +111,21 @@ public class MainFrame extends JFrame {
                 case "Java":
                     compileCommand = "javac "+current_open_path;
                     break;
+                case "Python":
+                    current_compile_path = current_open_path;
+                    compileCommand = null;
+                    break;
                 default:
                     compileCommand = "g++ "+current_open_path+" -o "+current_compile_path;
             }
 
 
             try {
+                if(compileCommand==null){
+                    current_run_path = current_compile_path;
+                    current_compile_path  = null;
+                    return  true;
+                }
                 Process sProgress =  Runtime.getRuntime().exec(compileCommand);
                 current_run_path = current_compile_path;
                 current_compile_path  = null;
@@ -168,6 +177,9 @@ public class MainFrame extends JFrame {
             case "Java":
                 fileName = getJavaClassName();
                 postfix = "java";
+                break;
+            case "Python":
+                postfix  = "py";
                 break;
             default:
                 postfix = "cpp";
@@ -229,6 +241,9 @@ public class MainFrame extends JFrame {
                 case "Java":
                     //java -cp /Users/yingyue/Documents/JAVA/Executer/codes/ JHello
                     runCommand = "java -cp "+classPath+" "+name;
+                    break;
+                case "Python":
+                    runCommand = "python "+current_run_path;
                     break;
                 default:
                     runCommand =  current_run_path;
