@@ -1,7 +1,6 @@
-#include<iostream>
+#include <iostream>
 using namespace std;
 int main(){
+	cout<<"hello cpp"<<endl;
 
-cout<<"cppfds"<<endl;
-return 0;
 }

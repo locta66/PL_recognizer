@@ -91,20 +91,39 @@ public class BayesHandle {
 
         }
     }
-
+    public String suspectType(String codes){
+        Tokenizer tokenizer = new Tokenizer();
+        tokenizer.setToTokens(codes);
+        tokenizer.preProcess();
+        tokenizer.ToTokens();
+        String[] unknownText = tokenizer.getTokens();
+        String result =  this.bayes.classify(Arrays.asList(unknownText)).getCategory();
+        return result;
+    }
     public void test(){
         String path = "test/";
+        double sum = 0;
+        double right =0;
         File file = new File(path);
         File[] tempList = file.listFiles();
-        for(int i =0; i <tempList.length; i ++){
+        for(int j=0;j<tempList.length;j++){
+            double sub_sum = 0;
+            double sub_right = 0;
+            File[]readFiles =  tempList[j].listFiles();
+            if(!tempList[j].isDirectory()){
+                continue;
+            }
+            String languagename = tempList[j].getName();
+        for(int i =0; i <readFiles.length; i ++) {
+
             FileInputStream e1 = null;
             try {
-                e1 = new FileInputStream(tempList[i]);
+                e1 = new FileInputStream(readFiles[i]);
                 BufferedReader br = new BufferedReader(new InputStreamReader(e1));
                 String line = null;
                 StringBuffer buffer = new StringBuffer();
 
-                while((line = br.readLine()) != null) {
+                while ((line = br.readLine()) != null) {
                     buffer.append(line + "\n");
                 }
                 Tokenizer tokenizer = new Tokenizer();
@@ -112,15 +131,24 @@ public class BayesHandle {
                 tokenizer.preProcess();
                 tokenizer.ToTokens();
                 //String[] TempTest = buffer.toString().split(splitT);
-                String[] unknownText =  tokenizer.getTokens();
-                System.out.print(tempList[i].getPath()+"            ");
+                String[] unknownText = tokenizer.getTokens();
+                System.out.print(readFiles[i].getPath() + "            ");
+               String result =  this.bayes.classify(Arrays.asList(unknownText)).getCategory();
                 System.out.println( // will output "positive"
-                        this.bayes.classify(Arrays.asList(unknownText)).getCategory());
+                        result);
+                sub_sum++;
+                sum++;
+                if(languagename.equals(result)){
+                    sub_right++;
+                    right++;
+                }
             } catch (Exception e) {
                 e.printStackTrace();
             }
-
         }
+        System.out.println(languagename+"correctRate = "+sub_right/sub_sum);
+        }
+        System.out.println("total correctRate = "+right/sum );
 
     }
     public static void main(String[] args){

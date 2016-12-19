@@ -15,7 +15,9 @@ public class MainFrame extends JFrame {
     String codesToRun;
     JTextArea textArea;
     JTextArea outputArea;
+    BayesHandle bayesHandle;
     public MainFrame() throws HeadlessException {
+        bayesHandle = new BayesHandle();
         current_open_path = null;
         JPanel jpanel  = new JPanel();
         textArea  = new JTextArea(30,50);
@@ -32,7 +34,10 @@ public class MainFrame extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 getCodesSelected();
-                writeTempFiles(0);
+                String type =  bayesHandle.suspectType(codesToRun);
+                outputArea.setText("判断类型： "+type+"\n"+"output:\n");
+
+                writeTempFiles(type);
                 compileProgram();
 
 
@@ -126,14 +131,14 @@ public class MainFrame extends JFrame {
         return codesToRun;
     }
 
-    public void writeTempFiles(int type){
+    public void writeTempFiles(String type){
 
         String postfix = null;
         switch (type){
-            case 0:
+            case "C++":
                 postfix = "cpp";
                 break;
-            case 1:
+            case "Java":
                 postfix = "java";
                 break;
             default:
