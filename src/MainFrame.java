@@ -1,5 +1,3 @@
-import com.sun.javaws.progress.Progress;
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -38,7 +36,7 @@ public class MainFrame extends JFrame {
                 outputArea.setText("判断类型： "+type+"\n"+"output:\n");
 
                 writeTempFiles(type);
-                compileProgram();
+                compileProgram(type);
 
 
                 try {
@@ -89,7 +87,7 @@ public class MainFrame extends JFrame {
         this.setSize(800,600);
         this.setVisible(true);
     }
-    private boolean compileProgram(){
+    private boolean compileProgram(String type){
 
         if(current_open_path == null)
             return false;

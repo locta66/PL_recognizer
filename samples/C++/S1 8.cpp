@@ -1,0 +1,3 @@
+int & GetObj(){
+    return val;
+}
