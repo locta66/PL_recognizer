@@ -2,6 +2,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.io.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Created by yingyue on 2016/12/16.
@@ -33,7 +35,7 @@ public class MainFrame extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 getCodesSelected();
                 String type =  bayesHandle.suspectType(codesToRun);
-                outputArea.setText("判断类型： "+type+"\n"+"output:\n");
+                outputArea.append("判断类型： "+type+"\n"+"output:\n");
 
                 writeTempFiles(type);
                 compileProgram(type);
@@ -45,7 +47,7 @@ public class MainFrame extends JFrame {
                     e1.printStackTrace();
                 }
 
-                runProgram();
+                runProgram(type);
             }
         });
         JButton open =  new JButton("open");
@@ -100,12 +102,36 @@ public class MainFrame extends JFrame {
             }
         }
         if(current_compile_path!=null){
-        String compileCommand = "make "+current_compile_path;
+            String compileCommand = null;
+            switch (type){
+
+                case"C++":
+                    compileCommand =  "g++ "+current_open_path+" -o "+current_compile_path;
+                    break;
+                case "Java":
+                    compileCommand = "javac "+current_open_path;
+                    break;
+                default:
+                    compileCommand = "g++ "+current_open_path+" -o "+current_compile_path;
+            }
+
 
             try {
                 Process sProgress =  Runtime.getRuntime().exec(compileCommand);
                 current_run_path = current_compile_path;
                 current_compile_path  = null;
+                InputStream in =  sProgress.getErrorStream();
+                BufferedReader br = new BufferedReader(new InputStreamReader(in));
+                String line = null;
+                StringBuffer buffer = new StringBuffer();
+                while((line = br.readLine())!=null){
+                    buffer.append(line+"\n");
+                }
+                outputArea.append(buffer.toString());
+                in.close();
+                br.close();
+                sProgress.destroy();
+
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -129,21 +155,25 @@ public class MainFrame extends JFrame {
         return codesToRun;
     }
 
+
     public void writeTempFiles(String type){
 
         String postfix = null;
+        String fileName  = "temp1";
+
         switch (type){
             case "C++":
                 postfix = "cpp";
                 break;
             case "Java":
+                fileName = getJavaClassName();
                 postfix = "java";
                 break;
             default:
                 postfix = "cpp";
         }
 
-        String fileAddress  = "codes/temp1." + postfix;
+        String fileAddress  = "codes/"+fileName+"." + postfix;
 
         try {
             File file = new File(fileAddress);
@@ -163,10 +193,48 @@ public class MainFrame extends JFrame {
 
 
     }
+    public String getJavaClassName(){
+        if(codesToRun!=null){
+            String temp = new String(codesToRun);
+            Pattern p  = Pattern.compile("(public class\\s[^{]*\\{)");
+            Matcher m = p.matcher(codesToRun);
+            String result = null;
 
-    private void runProgram(){
+            m.find();
+            result =  m.group();
+            result = result.substring(13,result.length()-1);
+            System.out.println(result);
+            return result;
+        }
+        return null;
+    }
+    private void runProgram(String type){
         try {
-            Process sProgress =  Runtime.getRuntime().exec(current_run_path);
+            String runCommand;
+            String name = null;
+            String classPath = null;
+            for(int i=current_run_path.length()-1;i>0;i--){
+             char  ch  = current_run_path.charAt(i);
+             if(ch=='/'){
+                 name = current_run_path.substring(i+1,current_run_path.length());
+                 classPath = current_run_path.substring(0,i+1);
+                 break;
+             }
+            }
+            switch (type){
+
+                case"C++":
+                    runCommand =  current_run_path;
+                    break;
+                case "Java":
+                    //java -cp /Users/yingyue/Documents/JAVA/Executer/codes/ JHello
+                    runCommand = "java -cp "+classPath+" "+name;
+                    break;
+                default:
+                    runCommand =  current_run_path;
+
+            }
+            Process sProgress =  Runtime.getRuntime().exec(runCommand);
             InputStream in =  sProgress.getInputStream();
             BufferedReader br = new BufferedReader(new InputStreamReader(in));
             String line = null;
