@@ -196,13 +196,13 @@ public class MainFrame extends JFrame {
     public String getJavaClassName(){
         if(codesToRun!=null){
             String temp = new String(codesToRun);
-            Pattern p  = Pattern.compile("(public class\\s[^{]*\\{)");
+            Pattern p  = Pattern.compile("(public class\\s[^\\s{]*)");
             Matcher m = p.matcher(codesToRun);
             String result = null;
 
             m.find();
             result =  m.group();
-            result = result.substring(13,result.length()-1);
+            result = result.substring(13,result.length());
             System.out.println(result);
             return result;
         }
